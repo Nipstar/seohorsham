@@ -7,8 +7,11 @@
   Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://app.cal.com https://cal.com; style-src 'self' 'unsafe-inline' https://app.cal.com; font-src 'self' data:; img-src 'self' data: https:; frame-src https://challenges.cloudflare.com https://app.cal.com https://cal.com https://weplumbit.co.uk https://plumber.3au.co.uk https://law.3au.co.uk https://locks.3au.co.uk; connect-src 'self' https://challenges.cloudflare.com https://app.cal.com https://api.cal.com https://cal.com https://auto.juxtarank.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
   Header unset X-Powered-By
   Header always unset X-Powered-By
-  <FilesMatch "\.(woff2|svg|png|webp|jpg)$">
+  <FilesMatch "\.woff2$">
     Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(svg|png|webp|jpg|ico)$">
+    Header set Cache-Control "public, max-age=86400"
   </FilesMatch>
   <FilesMatch "\.html$">
     Header set Cache-Control "public, max-age=3600"
