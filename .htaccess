@@ -1,0 +1,47 @@
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://app.cal.com https://cal.com; style-src 'self' 'unsafe-inline' https://app.cal.com; font-src 'self' data:; img-src 'self' data: https:; frame-src https://challenges.cloudflare.com https://app.cal.com https://cal.com https://weplumbit.co.uk https://plumber.3au.co.uk https://law.3au.co.uk https://locks.3au.co.uk; connect-src 'self' https://challenges.cloudflare.com https://app.cal.com https://api.cal.com https://cal.com https://auto.juxtarank.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+  Header unset X-Powered-By
+  Header always unset X-Powered-By
+  <FilesMatch "\.(woff2|svg|png|webp|jpg)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Block repository files pulled onto the server by Git
+  RewriteRule (^|/)\.git - [F,L]
+
+  # HTTPS (Cloudflare connects over HTTPS in Full mode)
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # www to apex
+  RewriteCond %{HTTP_HOST} ^www\.seohorsham\.co\.uk$ [NC]
+  RewriteRule ^(.*)$ https://seohorsham.co.uk/$1 [L,R=301]
+
+  # /index.html to /
+  RewriteCond %{THE_REQUEST} \s/+(.*?)index\.html[\s?] [NC]
+  RewriteRule ^ /%1 [R=301,L,NE]
+
+  # /page.html to /page
+  RewriteCond %{THE_REQUEST} \s/+(.+?)\.html[\s?] [NC]
+  RewriteRule ^ /%1 [R=301,L,NE]
+
+  # Serve /page from page.html
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+  RewriteRule ^(.+?)/?$ /$1.html [L]
+</IfModule>
+
+ErrorDocument 404 /404.html
